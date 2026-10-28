@@ -1,0 +1,245 @@
+{% extends 'permissions/base.html' %}
+
+{% block title %}Security Dashboard - SPMS{% endblock %}
+
+{% block extra_head %}
+<style>
+    .dashboard-card {
+        background: #fff;
+        border: 1px solid #d8e4ef;
+        border-radius: 14px;
+        box-shadow: 0 14px 28px rgba(16, 42, 67, 0.08);
+        padding: 20px;
+        margin-bottom: 18px;
+    }
+
+    .dashboard-card h3 {
+        color: #0f4c81;
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #d8e4ef;
+    }
+
+    .security-notice {
+        background: #fff8eb;
+        border: 1px solid #f3dcad;
+        border-radius: 12px;
+        padding: 14px;
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .security-icon {
+        font-size: 1.4rem;
+        color: #7a4a00;
+    }
+
+    .security-text h4 { color: #7a4a00; margin-bottom: 4px; font-weight: 700; }
+    .security-text p { color: #946200; margin: 0; font-size: 0.9rem; }
+
+    .data-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 12px;
+        border: 1px solid #d8e4ef;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .data-table th, .data-table td {
+        padding: 10px 12px;
+        text-align: left;
+        border-bottom: 1px solid #edf2f7;
+    }
+
+    .data-table th {
+        background: #f3f8fc;
+        color: #244864;
+        font-weight: 700;
+    }
+
+    .data-table tbody tr:hover { background: #f8fbff; }
+
+    .status-active {
+        color: #117a37;
+        font-weight: 700;
+        background: #ebf9f0;
+        padding: 3px 8px;
+        border-radius: 999px;
+    }
+
+    .status-expired {
+        color: #b42318;
+        font-weight: 700;
+        background: #fef2f2;
+        padding: 3px 8px;
+        border-radius: 999px;
+    }
+
+    .permission-card {
+        background: #fff;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 10px;
+        border: 1px solid #d8e4ef;
+    }
+
+    .permission-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        gap: 8px;
+    }
+
+    .student-info { font-weight: 700; color: #244864; }
+    .permission-type {
+        background: #eaf4fd;
+        color: #165d97;
+        padding: 2px 8px;
+        border-radius: 999px;
+        font-size: 0.78rem;
+        font-weight: 700;
+    }
+
+    .permission-details { color: #5f7183; font-size: 0.9rem; margin-bottom: 8px; }
+    .permission-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 0.8rem;
+        color: #73879a;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .empty-state { text-align: center; padding: 26px 16px; color: #5f7183; }
+    .empty-state h4 { color: #254864; margin-bottom: 6px; }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 12px;
+        margin-bottom: 16px;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #0f4c81 0%, #1f7ac0 100%);
+        color: #fff;
+        padding: 16px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .stat-number { font-size: 1.7rem; font-weight: 800; margin-bottom: 3px; }
+    .stat-label { font-size: 0.85rem; }
+
+    @media (max-width: 768px) {
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        .permission-header { flex-direction: column; align-items: flex-start; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="security-notice">
+    <div class="security-icon">🔒</div>
+    <div class="security-text">
+        <h4>Security Personnel Access</h4>
+        <p>You can only view permissions issued by the Dean. This ensures proper security oversight and authorization.</p>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-number">{{ permissions|length }}</div>
+        <div class="stat-label">Dean-Issued Permissions</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ permissions|length|add:"0" }}</div>
+        <div class="stat-label">Active Permissions</div>
+    </div>
+</div>
+
+<!-- Permissions from Dean -->
+<div class="dashboard-card">
+    <h3>Dean-Issued Permissions</h3>
+    {% if permissions %}
+        {% for permission in permissions %}
+        <div class="permission-card">
+            <div class="permission-header">
+                <div class="student-info">{{ permission.student_name }} - Class {{ permission.student_class }}</div>
+                <div class="permission-type">{{ permission.permission_type.name }}</div>
+            </div>
+            <div class="permission-details">{{ permission.description }}</div>
+            <div class="permission-meta">
+                <span>Issued by: {{ permission.issued_by.get_full_name|default:permission.issued_by.username }}</span>
+                <span>Time: {{ permission.time|date:"M d, Y H:i" }}</span>
+                <span>Duration: {{ permission.period }}</span>
+                <span>
+                    {% if permission.is_revoked %}
+                        <span class="status-expired">Revoked</span>
+                    {% elif permission.is_active %}
+                        <span class="status-active">Active</span>
+                    {% else %}
+                        <span class="status-expired">Expired</span>
+                    {% endif %}
+                </span>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <div class="empty-state">
+            <h4>No Permissions from Dean</h4>
+            <p>There are currently no permissions issued by the Dean for you to monitor.</p>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Detailed Table View -->
+{% if permissions %}
+<div class="dashboard-card">
+    <h3>Detailed Permissions Table</h3>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Class</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Issued By</th>
+                <th>Time Issued</th>
+                <th>Duration</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for permission in permissions %}
+            <tr>
+                <td>{{ permission.student_name }}</td>
+                <td>{{ permission.student_class }}</td>
+                <td>{{ permission.description|truncatechars:30 }}</td>
+                <td>{{ permission.permission_type.name }}</td>
+                <td>{{ permission.issued_by.get_full_name|default:permission.issued_by.username }}</td>
+                <td>{{ permission.time|date:"M d, Y H:i" }}</td>
+                <td>{{ permission.period }}</td>
+                <td>
+                    {% if permission.is_revoked %}
+                        <span class="status-expired">Revoked</span>
+                    {% elif permission.is_active %}
+                        <span class="status-active">Active</span>
+                    {% else %}
+                        <span class="status-expired">Expired</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endif %}
+{% endblock %}

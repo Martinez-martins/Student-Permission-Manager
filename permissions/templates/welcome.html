@@ -1,0 +1,130 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KALI</title>
+    <style>
+        :root {
+            --bg-color: #0b0b0b;
+            --accent-color: #969595;
+            --glow-color: rgba(187, 185, 185, 0.8);
+            --transition-speed: 0.8s;
+            /* Snappier transition for individual letters */
+        }
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+            url('{% static "images/arc.png" %}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            font-family: 'Arial Black', sans-serif;
+            transition: filter 2.5s ease-in-out;
+        }
+
+        #animation-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 2;
+        }
+
+        .letters-wrapper {
+            display: flex;
+            gap: 25px;
+        }
+
+        .letter {
+            font-size: 9rem;
+            font-weight: 900;
+            color: var(--accent-color);
+            opacity: 0;
+            transform: translateY(30px) scale(0.8);
+            filter: blur(20px) brightness(5);
+            display: inline-block;
+            transition: all var(--transition-speed) ease-out;
+        }
+
+        /* The "Light" Entry Animation */
+        .letter.animate {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            filter: blur(0px) brightness(1.1);
+            text-shadow: 0 0 10px #fff,
+                0 0 20px #fff,
+                0 0 40px var(--glow-color),
+                0 0 70px var(--glow-color);
+        }
+
+        /* Deep Blur Phase */
+        .deep-blur {
+            filter: blur(50px) brightness(1) !important;
+            transition: filter 3s ease-in;
+        }
+
+        .exit-app {
+            opacity: 0;
+            transform: scale(1.5);
+            transition: opacity 2s ease, transform 2.5s ease;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="animation-container">
+        <div class="letters-wrapper">
+            <span class="letter">K</span>
+            <span class="letter">A</span>
+            <span class="letter">L</span>
+            <span class="letter">I</span>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const letters = document.querySelectorAll('.letter');
+
+            // INCREASED DELAY: 500ms (0.5s) between each letter
+            const letterDelay = 500;
+
+            // 1. Light Entry (One by One)
+            letters.forEach((char, index) => {
+                setTimeout(() => {
+                    char.classList.add('animate');
+                }, index * letterDelay);
+            });
+
+            // 2. Start Blurring (Wait for all letters to finish appearing + a small pause)
+            const totalAnimationTime = (letters.length * letterDelay) + 1200;
+
+            setTimeout(() => {
+                document.body.classList.add('deep-blur');
+
+                // 3. Final fade and redirect
+                setTimeout(() => {
+                    document.body.classList.add('exit-app');
+                    setTimeout(() => {
+                        window.location.href = '{% url "welcome" %}';
+                    }, 2000);
+                }, 1000);
+            }, totalAnimationTime);
+        });
+    </script>
+</body>
+
+</html>

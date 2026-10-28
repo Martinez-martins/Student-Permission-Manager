@@ -1,0 +1,123 @@
+{% extends 'permissions/base.html' %}
+
+{% block title %}All Permissions - SPMS{% endblock %}
+
+{% block extra_head %}
+<style>
+    .page-card {
+        background: #fff;
+        border: 1px solid #d8e4ef;
+        border-radius: 14px;
+        box-shadow: 0 14px 28px rgba(16, 42, 67, 0.08);
+        padding: 20px;
+    }
+
+    .page-header h2 {
+        color: #0f4c81;
+        margin-bottom: 6px;
+    }
+
+    .page-header p {
+        color: #5f7183;
+        margin-bottom: 14px;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        border: 1px solid #d8e4ef;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 10px 12px;
+        text-align: left;
+        border-bottom: 1px solid #edf2f7;
+    }
+
+    .data-table th {
+        background: #f3f8fc;
+        color: #244864;
+        font-weight: 700;
+    }
+
+    .data-table tbody tr:hover { background: #f8fbff; }
+
+    .status-pill {
+        display: inline-block;
+        border-radius: 999px;
+        padding: 3px 8px;
+        font-size: 0.85rem;
+        font-weight: 700;
+    }
+
+    .status-active {
+        color: #117a37;
+        background: #ebf9f0;
+    }
+
+    .status-expired {
+        color: #b42318;
+        background: #fef2f2;
+    }
+
+    .empty-state {
+        text-align: center;
+        border: 1px dashed #bed3e6;
+        border-radius: 10px;
+        padding: 26px;
+        color: #5f7183;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-card">
+    <div class="page-header">
+        <h2>All Student Permissions</h2>
+        <p>Complete list of permissions issued in the system.</p>
+    </div>
+
+    {% if permissions %}
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Student</th>
+                <th>Class</th>
+                <th>Permission Type</th>
+                <th>Issued By</th>
+                <th>Issued Time</th>
+                <th>End Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for permission in permissions %}
+            <tr>
+                <td>{{ permission.student_name }}</td>
+                <td>{{ permission.student_class }}</td>
+                <td>{{ permission.permission_type.name }}</td>
+                <td>{{ permission.issued_by.get_full_name|default:permission.issued_by.username }}</td>
+                <td>{{ permission.time|date:"M d, Y H:i" }}</td>
+                <td>{{ permission.end_time|date:"M d, Y H:i" }}</td>
+                <td>
+                    {% if permission.is_revoked %}
+                        <span class="status-pill status-expired">Revoked</span>
+                    {% elif permission.is_active %}
+                        <span class="status-pill status-active">Active</span>
+                    {% else %}
+                        <span class="status-pill status-expired">Expired</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div class="empty-state">No permissions found.</div>
+    {% endif %}
+</div>
+{% endblock %}

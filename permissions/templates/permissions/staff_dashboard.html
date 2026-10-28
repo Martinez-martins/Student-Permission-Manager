@@ -1,0 +1,436 @@
+{% extends 'permissions/base.html' %}
+
+{% block title %}Staff Dashboard - SPMS{% endblock %}
+
+{% block extra_head %}
+<style>
+    .dashboard-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 18px;
+        margin-bottom: 18px;
+    }
+
+    .dashboard-card {
+        background: #fff;
+        border: 1px solid #d8e4ef;
+        border-radius: 14px;
+        box-shadow: 0 14px 28px rgba(16, 42, 67, 0.08);
+        padding: 20px;
+    }
+
+    .dashboard-card h3 {
+        color: #0f4c81;
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #d8e4ef;
+    }
+
+    .permission-types-list {
+        background: #f8fbff;
+        border: 1px solid #dfeaf4;
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 14px;
+    }
+
+    .permission-type-item,
+    .notification-item,
+    .entry-item,
+    .shared-list-item {
+        background: #f8fbff;
+        border: 1px solid #d8e4ef;
+        border-radius: 12px;
+        padding: 14px;
+        margin-bottom: 12px;
+    }
+
+    .permission-type-name { font-weight: 700; color: #254864; margin-bottom: 4px; }
+    .permission-type-desc,
+    .entry-meta { color: #5f7183; font-size: 0.9rem; }
+
+    .notification-item.unread {
+        border-color: #93c5fd;
+        background: #eff6ff;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #145d9b 0%, #1f7ac0 100%);
+        color: #fff;
+        border: none;
+        padding: 11px 18px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+    .btn-primary:hover { color: #fff; text-decoration: none; }
+
+    .btn {
+        display: inline-block;
+        padding: 6px 10px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 700;
+        border: 1px solid #bfd5e8;
+        color: #165d97;
+        background: #fff;
+    }
+
+    .btn:hover { background: #eaf4fd; }
+
+    .btn-danger {
+        color: #b42318;
+        border-color: #fecaca;
+        background: #fff5f5;
+    }
+
+    .btn-danger:hover { background: #fee2e2; }
+
+    .data-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 12px;
+        border: 1px solid #d8e4ef;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .data-table th, .data-table td {
+        padding: 10px 12px;
+        text-align: left;
+        border-bottom: 1px solid #edf2f7;
+    }
+
+    .data-table th {
+        background: #f3f8fc;
+        color: #244864;
+        font-weight: 700;
+    }
+
+    .data-table tbody tr:hover { background: #f8fbff; }
+
+    .status-active {
+        color: #117a37;
+        font-weight: 700;
+        background: #ebf9f0;
+        padding: 3px 8px;
+        border-radius: 999px;
+    }
+
+    .status-expired {
+        color: #b42318;
+        font-weight: 700;
+        background: #fef2f2;
+        padding: 3px 8px;
+        border-radius: 999px;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #0f4c81 0%, #1f7ac0 100%);
+        color: #fff;
+        padding: 16px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .stat-number { font-size: 1.7rem; font-weight: 800; margin-bottom: 3px; }
+    .stat-label { font-size: 0.85rem; }
+
+    .empty-state { text-align: center; padding: 24px 14px; color: #5f7183; }
+    .empty-state h4 { color: #254864; margin-bottom: 6px; }
+    .text-muted { color: #7a8d9f; font-style: italic; }
+
+    .form-group { margin-bottom: 12px; }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #2a4a66;
+    }
+
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+        width: 100%;
+        padding: 10px 12px;
+        border: 1px solid #cbdbea;
+        border-radius: 10px;
+        background: #fff;
+    }
+
+    .inline-form { margin-top: 10px; }
+
+    @media (max-width: 768px) {
+        .dashboard-container { grid-template-columns: 1fr; }
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-card">
+        <h3>Available Permission Types</h3>
+        {% if allowed_permission_types %}
+            <div class="permission-types-list">
+                {% for pt in allowed_permission_types %}
+                <div class="permission-type-item">
+                    <div class="permission-type-name">{{ pt.name }}</div>
+                    <div class="permission-type-desc">{{ pt.description }}</div>
+                </div>
+                {% endfor %}
+            </div>
+            <a href="{% url 'issue_permission' %}" class="btn-primary">Issue New Permission</a>
+        {% else %}
+            <div class="empty-state">
+                <h4>No Permission Types Available</h4>
+                <p>You are not authorized to issue any permissions at this time.</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="dashboard-card">
+        <h3>Your Activity Summary</h3>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number">{{ allowed_permission_types|length }}</div>
+                <div class="stat-label">Permission Types Available</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ issued_permissions|length }}</div>
+                <div class="stat-label">Permissions Issued</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number">{{ shared_lists|length }}</div>
+                <div class="stat-label">Shared Lists</div>
+            </div>
+        </div>
+        <a href="{% url 'permissions' %}" class="btn-primary">View All Student Permissions</a>
+    </div>
+</div>
+
+{% if user.userprofile.role.name == 'dean' %}
+<div class="dashboard-card">
+    <h3>Latest Dean Notifications</h3>
+    {% if notifications %}
+        {% for notification in notifications %}
+        <div class="notification-item {% if not notification.is_read %}unread{% endif %}">
+            <div class="permission-type-name">{{ notification.message }}</div>
+            <div class="entry-meta">{{ notification.created_at|date:"M d, Y H:i" }}</div>
+            {% if not notification.is_read %}
+            <form method="post" action="{% url 'mark_notification_read' notification.id %}" class="inline-form">
+                {% csrf_token %}
+                <input type="hidden" name="next_page" value="dean_notifications">
+                <button type="submit" class="btn">Mark as Read</button>
+            </form>
+            {% endif %}
+        </div>
+        {% endfor %}
+        <a href="{% url 'dean_notifications' %}" class="btn-primary">Open All Notifications</a>
+    {% else %}
+        <div class="empty-state">
+            <h4>No Notifications</h4>
+            <p>The dean has no nurse alerts yet.</p>
+        </div>
+    {% endif %}
+</div>
+{% endif %}
+
+<div class="dashboard-container">
+    {% if user.userprofile.role.name == 'nurse' %}
+    <div class="dashboard-card">
+        <h3>Notify Dean About Sick Student</h3>
+        <form method="post" action="{% url 'notify_dean_about_student' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="notify_student_name">Student Name</label>
+                <input id="notify_student_name" type="text" name="student_name" required>
+            </div>
+            <div class="form-group">
+                <label for="notify_student_class">Student Class</label>
+                <input id="notify_student_class" type="text" name="student_class" required>
+            </div>
+            <div class="form-group">
+                <label for="notify_notes">Notes</label>
+                <textarea id="notify_notes" name="notes" rows="4" placeholder="Symptoms, treatment, or follow-up needed"></textarea>
+            </div>
+            <button type="submit" class="btn-primary">Send Dean Notification</button>
+        </form>
+    </div>
+
+    <div class="dashboard-card">
+        <h3>Live Nurse Room List</h3>
+        <form method="post" action="{% url 'manage_nurse_room_share' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="nurse_student_name">Student Name</label>
+                <input id="nurse_student_name" type="text" name="student_name" placeholder="Enter student name">
+            </div>
+            <div class="form-group">
+                <label for="nurse_level">Level</label>
+                <select id="nurse_level" name="level">
+                    <option value="">Select level</option>
+                    <option value="o_level">O LEVEL</option>
+                    <option value="a_level">A LEVEL</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="nurse_student_class">Class</label>
+                <input id="nurse_student_class" type="text" name="student_class" placeholder="Enter class">
+            </div>
+            <div class="form-group">
+                <label for="nurse_room_description">Context</label>
+                <textarea id="nurse_room_description" name="description" rows="3" placeholder="Optional handoff notes for staff">{{ nurse_room_share.description|default:'' }}</textarea>
+            </div>
+            <button type="submit" class="btn-primary">Add Student to Sick Room</button>
+        </form>
+
+        {% if nurse_room_entries %}
+            <div style="margin-top: 16px;">
+                {% for entry in nurse_room_entries %}
+                <div class="entry-item">
+                    <div class="permission-type-name">{{ entry.student_name }}</div>
+                    <div class="entry-meta">{{ entry.get_level_display }} - {{ entry.student_class }}</div>
+                    <form method="post" action="{% url 'remove_nurse_room_entry' entry.id %}" class="inline-form">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Remove</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h4>No Students in the Sick Room</h4>
+                <p>Add students with the form above to keep the live list current.</p>
+            </div>
+        {% endif %}
+        <a href="{% url 'nurse_room_list' %}" class="btn-primary" style="margin-top: 14px;">Open Full Sick Room List</a>
+    </div>
+    {% endif %}
+
+    <div class="dashboard-card">
+        <h3>Share Names Publicly</h3>
+        <form method="post" action="{% url 'create_shared_list' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="share_title">List Title</label>
+                <input id="share_title" type="text" name="title" placeholder="e.g., Students Cleared for Pickup" required>
+            </div>
+            <div class="form-group">
+                <label for="share_description">Description</label>
+                <textarea id="share_description" name="description" rows="3" placeholder="Optional context for staff members"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="share_names">Individuals</label>
+                <textarea id="share_names" name="names_text" rows="6" placeholder="One individual per line" required></textarea>
+            </div>
+            <button type="submit" class="btn-primary">Create Shared List</button>
+        </form>
+    </div>
+</div>
+
+<div class="dashboard-card">
+    <h3>Permissions Issued by You</h3>
+    {% if issued_permissions %}
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Student Name</th>
+                    <th>Class</th>
+                    <th>Description</th>
+                    <th>Type</th>
+                    <th>Time Issued</th>
+                    <th>Duration</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for permission in issued_permissions %}
+                <tr>
+                    <td>{{ permission.student_name }}</td>
+                    <td>{{ permission.student_class }}</td>
+                    <td>{{ permission.description|truncatechars:30 }}</td>
+                    <td>{{ permission.permission_type.name }}</td>
+                    <td>{{ permission.time|date:"M d, Y H:i" }}</td>
+                    <td>{{ permission.period }}</td>
+                    <td>
+                        {% if permission.is_revoked %}
+                            <span class="status-expired">Revoked</span>
+                        {% elif permission.is_active %}
+                            <span class="status-active">Active</span>
+                        {% else %}
+                            <span class="status-expired">Expired</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if permission.is_active %}
+                            <a href="{% url 'edit_permission' permission.id %}" class="btn btn-outline btn-sm">Edit</a>
+                            <a href="{% url 'delete_permission' permission.id %}" class="btn btn-danger btn-sm" style="margin-left: 8px;">Revoke</a>
+                        {% elif permission.is_revoked %}
+                            <span class="text-muted">Revoked</span>
+                        {% else %}
+                            <a href="{% url 'delete_permission' permission.id %}" class="btn btn-danger btn-sm">Delete Permanently</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <div class="empty-state">
+            <h4>No Permissions Issued Yet</h4>
+            <p>You haven't issued any permissions yet. Click "Issue New Permission" to get started.</p>
+            <a href="{% url 'issue_permission' %}" class="btn-primary" style="margin-top: 15px;">Issue First Permission</a>
+        </div>
+    {% endif %}
+</div>
+
+<div class="dashboard-card">
+    <h3>Your Shared Lists</h3>
+        {% if shared_lists %}
+            {% for shared_list in shared_lists %}
+                {% if shared_list.share_type != 'nurse_room' %}
+                <div class="shared-list-item">
+                    <div class="permission-type-name">{{ shared_list.title }}</div>
+                    <div class="permission-type-desc">
+                        {{ shared_list.get_share_type_display }} - {{ shared_list.names|length }} names
+                    </div>
+                    {% if shared_list.description %}
+                        <p style="margin: 8px 0 10px;">{{ shared_list.description }}</p>
+                    {% endif %}
+                    <ul class="name-list" style="list-style: none; padding: 0; margin: 10px 0;">
+                        {% for name in shared_list.names %}
+                            <li style="background: #f8fbff; padding: 8px; border-radius: 6px; margin-bottom: 6px; border-left: 3px solid #165d97;">
+                                {{ name }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                    <div style="margin-top: 12px;">
+                        <a href="{% url 'shared_list_public' shared_list.share_token %}" class="btn" style="margin-right: 8px;">Public View</a>
+                        <a href="{% url 'download_shared_list' shared_list.pk %}" class="btn btn-primary">📥 Download CSV</a>
+                    </div>
+                </div>
+                {% endif %}
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">
+                <h4>No Shared Lists Yet</h4>
+                <p>Create a list above to publish student names on the public student board.</p>
+            </div>
+        {% endif %}
+</div>
+{% endblock %}

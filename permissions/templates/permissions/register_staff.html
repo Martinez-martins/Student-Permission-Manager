@@ -1,0 +1,165 @@
+{% extends 'permissions/base.html' %}
+
+{% block title %}Staff Registration - SPMS{% endblock %}
+
+{% block extra_head %}
+<style>
+    .auth-wrap { max-width: 560px; margin: 0 auto; }
+
+    .auth-card {
+        background: #fff;
+        border: 1px solid #d8e4ef;
+        border-radius: 16px;
+        box-shadow: 0 14px 28px rgba(16, 42, 67, 0.08);
+        padding: 30px;
+    }
+
+    .auth-title {
+        text-align: center;
+        color: #0f4c81;
+        margin-bottom: 8px;
+        font-size: 1.62rem;
+    }
+
+    .auth-subtitle {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #5f7183;
+        font-size: 0.95rem;
+    }
+
+    .info-text {
+        background: #eef7ff;
+        border: 1px solid #cfe1f2;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 18px;
+        color: #2a4f70;
+        font-size: 0.92rem;
+    }
+
+    .form-group { margin-bottom: 14px; }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #2a4a66;
+    }
+
+    .form-control,
+    .form-group input {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #cbdbea;
+        border-radius: 10px;
+        font-size: 15px;
+        box-sizing: border-box;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .form-control:focus,
+    .form-group input:focus {
+        outline: none;
+        border-color: #1f7ac0;
+        box-shadow: 0 0 0 4px rgba(31, 122, 192, 0.15);
+    }
+
+    .role-info {
+        background: #fff8eb;
+        border: 1px solid #f3dcad;
+        border-radius: 10px;
+        padding: 9px;
+        margin-top: 8px;
+        font-size: 0.85rem;
+        color: #8b5e00;
+    }
+
+    .auth-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #145d9b 0%, #1f7ac0 100%);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 12px 24px rgba(20, 93, 155, 0.24);
+    }
+
+    .auth-links {
+        text-align: center;
+        margin-top: 18px;
+        padding-top: 16px;
+        border-top: 1px solid #e5edf5;
+        color: #5f7183;
+    }
+
+    .auth-links a { color: #165d97; text-decoration: none; font-weight: 600; }
+    .auth-links a:hover { text-decoration: underline; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="auth-wrap">
+<div class="auth-card">
+    <h2 class="auth-title">Staff Registration</h2>
+    <p class="auth-subtitle">Create your staff account to start issuing and managing permissions.</p>
+
+    <div class="info-text">
+        <strong>Registration Instructions:</strong>
+        First select your staff role, then enter the activation code provided by your administrator for that role.
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="staff_role">Staff Role</label>
+            <select id="staff_role" name="staff_role" class="form-control" required>
+                <option value="">Select your role</option>
+                <option value="patron">Patron</option>
+                <option value="matron">Matron</option>
+                <option value="nurse">Nurse</option>
+                <option value="dean">Dean</option>
+                <option value="dos">Director of Studies</option>
+                <option value="principal">Principal</option>
+                <option value="security">Security</option>
+            </select>
+            <div class="role-info" id="role-info" style="display: none;">
+                Selected role will determine your access permissions and available features.
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="username">Username</label>
+            <input type="text" id="username" name="username" required>
+        </div>
+
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required>
+        </div>
+
+        <div class="form-group">
+            <label for="activation_code">Activation Code</label>
+            <input type="text" id="activation_code" name="activation_code" placeholder="Enter activation code from admin" required>
+        </div>
+
+        <button type="submit" class="auth-btn">Register</button>
+    </form>
+
+    <div class="auth-links">
+        <a href="{% url 'login' %}">Already have an account? Login</a>
+    </div>
+</div>
+</div>
+
+<script>
+    document.getElementById('staff_role').addEventListener('change', function() {
+        const roleInfo = document.getElementById('role-info');
+        roleInfo.style.display = this.value ? 'block' : 'none';
+    });
+</script>
+{% endblock %}

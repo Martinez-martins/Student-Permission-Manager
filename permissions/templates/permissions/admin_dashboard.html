@@ -1,0 +1,405 @@
+{% extends 'permissions/base.html' %}
+
+{% block title %}Admin Dashboard - SPMS{% endblock %}
+
+{% block extra_head %}
+<style>
+    .dashboard-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+        gap: 18px;
+        margin-bottom: 20px;
+    }
+
+    .dashboard-card,
+    .permissions-overview {
+        background: #fff;
+        border: 1px solid #d8e4ef;
+        border-radius: 14px;
+        box-shadow: 0 14px 28px rgba(16, 42, 67, 0.08);
+        padding: 20px;
+    }
+
+    .dashboard-card h3,
+    .permissions-overview h3 {
+        color: #0f4c81;
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #d8e4ef;
+    }
+
+    .form-group { margin-bottom: 12px; }
+    .form-group label { display: block; margin-bottom: 5px; font-weight: 600; color: #2a4a66; }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 10px 11px;
+        border: 1px solid #cbdbea;
+        border-radius: 10px;
+        font-size: 14px;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #1f7ac0;
+        box-shadow: 0 0 0 4px rgba(31, 122, 192, 0.14);
+    }
+
+    .form-group textarea { resize: vertical; min-height: 70px; }
+
+    .checkbox-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 8px;
+        margin: 8px 0;
+    }
+
+    .checkbox-group label { display: flex; gap: 7px; align-items: center; margin: 0; }
+    .checkbox-group input[type="checkbox"] { width: auto; }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #145d9b 0%, #1f7ac0 100%);
+        color: #fff;
+        border: none;
+        padding: 11px 18px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .table-wrap {
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .data-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 14px;
+        border: 1px solid #d8e4ef;
+        border-radius: 10px;
+        overflow: hidden;
+    }
+
+    .data-table th,
+    .data-table td {
+        padding: 10px 12px;
+        text-align: left;
+        border-bottom: 1px solid #edf2f7;
+        white-space: nowrap;
+    }
+
+    @media (max-width: 480px) {
+        .data-table { min-width: 680px; }
+        .data-table th,
+        .data-table td { padding: 8px 10px; font-size: 12px; }
+    }
+
+    .data-table th {
+        background: #f3f8fc;
+        color: #244864;
+        font-weight: 700;
+    }
+
+    .data-table tbody tr:hover { background: #f8fbff; }
+    .status-active { color: #117a37; font-weight: 700; }
+    .status-expired { color: #b42318; font-weight: 700; }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+        gap: 12px;
+        margin-bottom: 14px;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #0f4c81 0%, #1f7ac0 100%);
+        color: #fff;
+        padding: 16px;
+        border-radius: 12px;
+        text-align: center;
+    }
+
+    .stat-number { font-size: 1.8rem; font-weight: 800; margin-bottom: 3px; }
+    .stat-label { font-size: 0.85rem; opacity: 0.95; }
+
+    @media (max-width: 768px) {
+        .dashboard-container { grid-template-columns: 1fr; }
+        .checkbox-group { grid-template-columns: 1fr; }
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @media (max-width: 360px) {
+        .dashboard-card,
+        .permissions-overview { padding: 14px; }
+
+        .dashboard-card h3,
+        .permissions-overview h3 { font-size: 1.05rem; }
+
+        .stat-number { font-size: 1.5rem; }
+        .stat-label { font-size: 0.78rem; }
+
+        .data-table th,
+        .data-table td {
+            padding: 7px 8px;
+            font-size: 11px;
+            line-height: 1.2;
+        }
+
+        .data-table td:nth-child(3),
+        .data-table th:nth-child(3) { max-width: 90px; word-break: break-word; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Staff Roles Management -->
+    <div class="dashboard-card">
+        <h3>Staff Roles Management</h3>
+        <form method="post" action="{% url 'create_staff_role' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="role_name">Create New Role:</label>
+                <select name="name" id="role_name" required>
+                    <option value="">Select Role</option>
+                    <option value="security">Security</option>
+                    <option value="patron">Patron</option>
+                    <option value="matron">Matron</option>
+                    <option value="nurse">Nurse</option>
+                    <option value="dean">Dean</option>
+                    <option value="dos">Director of Studies</option>
+                    <option value="principal">Principal</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-primary">Create Role</button>
+        </form>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Role Name</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for role in roles %}
+                <tr>
+                    <td>{{ role.id }}</td>
+                    <td>{{ role.get_name_display }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Activation Codes Management -->
+    <div class="dashboard-card">
+        <h3>Activation Codes</h3>
+        {% if can_generate_codes %}
+            <form method="post" action="{% url 'generate_activation_code' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="role_select">Generate Code for Role:</label>
+                    <select name="role" id="role_select" required>
+                        <option value="">Select Role</option>
+                        {% for role in roles %}
+                        <option value="{{ role.id }}">{{ role.get_name_display }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">Generate Code</button>
+            </form>
+        {% else %}
+            <p><strong>Only the Super Admin can generate activation codes.</strong></p>
+        {% endif %}
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Role</th>
+                    <th>Created At</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for code in codes %}
+                <tr>
+                    <td><code>{{ code.code }}</code></td>
+                    <td>{{ code.role.get_name_display }}</td>
+                    <td>{{ code.created_at|date:"M d, Y H:i" }}</td>
+                    <td>
+                        {% if code.is_used %}
+                            <span class="status-expired">Used</span>
+                        {% else %}
+                            <span class="status-active">Available</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Permission Types Management -->
+    <div class="dashboard-card">
+        <h3>Permission Types</h3>
+        <form method="post" action="{% url 'create_permission_type' %}">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="perm_name">Permission Type Name:</label>
+                <input type="text" name="name" id="perm_name" placeholder="e.g., Medical Leave, Sports Event" required>
+            </div>
+            <div class="form-group">
+                <label for="perm_desc">Description:</label>
+                <textarea name="description" id="perm_desc" placeholder="Describe the permission type"></textarea>
+            </div>
+            <div class="form-group">
+                <label>Allowed Roles:</label>
+                <div class="checkbox-group">
+                    {% for role in roles %}
+                    <label>
+                        <input type="checkbox" name="allowed_roles" value="{{ role.id }}">
+                        {{ role.get_name_display }}
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+            <button type="submit" class="btn-primary">Create Permission Type</button>
+        </form>
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Allowed Roles</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pt in permission_types %}
+                <tr>
+                    <td>{{ pt.name }}</td>
+                    <td>{{ pt.description|truncatechars:50 }}</td>
+                    <td>
+                        {% for role in pt.allowed_roles.all %}
+                            <span class="badge">{{ role.get_name_display }}</span>
+                        {% empty %}
+                            <em>No roles assigned</em>
+                        {% endfor %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- System Overview -->
+<div class="permissions-overview">
+    <h3>System Overview</h3>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-number">{{ roles|length }}</div>
+            <div class="stat-label">Staff Roles</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ codes|length }}</div>
+            <div class="stat-label">Activation Codes</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ permission_types|length }}</div>
+            <div class="stat-label">Permission Types</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">{{ permissions|length }}</div>
+            <div class="stat-label">Total Permissions</div>
+        </div>
+    </div>
+
+    <h4>All Permissions</h4>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Student Name</th>
+                <th>Class</th>
+                <th>Description</th>
+                <th>Type</th>
+                <th>Issued By</th>
+                <th>Time</th>
+                <th>Period</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for permission in permissions %}
+            <tr>
+                <td>{{ permission.student_name }}</td>
+                <td>{{ permission.student_class }}</td>
+                <td>{{ permission.description|truncatechars:30 }}</td>
+                <td>{{ permission.permission_type.name }}</td>
+                <td>{{ permission.issued_by.get_full_name|default:permission.issued_by.username }}</td>
+                <td>{{ permission.time|date:"M d, H:i" }}</td>
+                <td>
+                    {% if permission.is_active and permission.remaining_seconds %}
+                        <span class="remaining-timer" data-seconds="{{ permission.remaining_seconds|default:0 }}">
+                            {{ permission.remaining_seconds|floatformat:0 }}s
+                        </span>
+                    {% elif permission.is_revoked %}
+                        Revoked
+                    {% else %}
+                        Expired
+                    {% endif %}
+                </td>
+                <td>
+                    {% if permission.is_revoked %}
+                        <span class="status-expired">Revoked</span>
+                    {% elif permission.is_active %}
+                        <span class="status-active">Active</span>
+                    {% else %}
+                        <span class="status-expired">Expired</span>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+(function () {
+  const timers = document.querySelectorAll('.remaining-timer');
+  function tick() {
+    const now = Date.now();
+    timers.forEach(el => {
+      const initial = parseInt(el.getAttribute('data-seconds') || '0', 10);
+      const shown = parseInt(el.textContent.replace(/[^\d]/g, '') || '0', 10);
+
+      // We decrement by 1 per tick using the stored value
+      let remaining = initial;
+      if (el.getAttribute('data-last-tick') === null) el.setAttribute('data-last-tick', String(now));
+      const last = parseInt(el.getAttribute('data-last-tick') || String(now), 10);
+      const elapsed = Math.max(0, Math.floor((now - last) / 1000));
+
+      remaining = Math.max(0, initial - elapsed);
+
+      el.setAttribute('data-seconds', String(remaining));
+      el.setAttribute('data-last-tick', String(now));
+      el.textContent = remaining + 's';
+    });
+  }
+  tick();
+  setInterval(tick, 1000);
+})();
+</script>
+
+{% endblock %}

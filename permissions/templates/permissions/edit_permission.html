@@ -1,0 +1,195 @@
+{% extends 'permissions/base.html' %}
+
+{% block title %}Edit Permission - SPMS{% endblock %}
+
+{% block extra_head %}
+<style>
+    .form-container {
+        max-width: 720px;
+        margin: 0 auto;
+        background: #fff;
+        border: 1px solid #d8e4ef;
+        border-radius: 14px;
+        box-shadow: 0 14px 28px rgba(16, 42, 67, 0.08);
+        padding: 24px;
+    }
+
+    .form-container h2 {
+        margin-bottom: 10px;
+        color: #0f4c81;
+    }
+
+    .permission-info {
+        background: #f8fbff;
+        border: 1px solid #dfeaf4;
+        border-radius: 10px;
+        padding: 14px;
+        margin-bottom: 16px;
+    }
+
+    .permission-info h4 {
+        margin: 0 0 8px;
+        color: #244864;
+    }
+
+    .permission-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 8px;
+        font-size: 0.92rem;
+    }
+
+    .detail-item { display: flex; justify-content: space-between; }
+    .detail-label { font-weight: 700; color: #5f7183; }
+    .detail-value { color: #244864; }
+
+    .form-group { margin-bottom: 14px; }
+    .form-label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #2a4a66;
+    }
+
+    .form-control,
+    .form-select {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #cbdbea;
+        border-radius: 10px;
+        font-size: 15px;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: #1f7ac0;
+        box-shadow: 0 0 0 4px rgba(31, 122, 192, 0.15);
+    }
+
+    .checkbox-row {
+        background: #f8fbff;
+        border: 1px solid #dfeaf4;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 10px;
+    }
+
+    .checkbox-row label {
+        font-weight: 700;
+        color: #244864;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-container {
+        display: flex;
+        gap: 10px;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .btn {
+        display: inline-block;
+        padding: 11px 18px;
+        border-radius: 10px;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        min-width: 140px;
+        text-align: center;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #145d9b 0%, #1f7ac0 100%);
+        color: #fff;
+    }
+
+    .btn-secondary {
+        background: #eef3f8;
+        border: 1px solid #cbdbea;
+        color: #1f5d92;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-container">
+    <h2>Edit Permission</h2>
+
+    <div class="permission-info">
+        <h4>Current Permission Details</h4>
+        <div class="permission-details">
+            <div class="detail-item">
+                <span class="detail-label">Student:</span>
+                <span class="detail-value">{{ permission.student_name }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Class:</span>
+                <span class="detail-value">{{ permission.student_class }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Type:</span>
+                <span class="detail-value">{{ permission.permission_type.name }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Duration:</span>
+                <span class="detail-value">{{ permission.period }}</span>
+            </div>
+        </div>
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="student_name" class="form-label">Student Name</label>
+            <input type="text" id="student_name" name="student_name" class="form-control" value="{{ permission.student_name }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="student_class" class="form-label">Student Class</label>
+            <input type="text" id="student_class" name="student_class" class="form-control" value="{{ permission.student_class }}" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description" class="form-label">Description</label>
+            <textarea id="description" name="description" class="form-control" rows="3" required>{{ permission.description }}</textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="permission_type" class="form-label">Permission Type</label>
+            <select id="permission_type" name="permission_type" class="form-select" required>
+                {% for pt in allowed_permission_types %}
+                <option value="{{ pt.id }}" {% if pt.id == permission.permission_type.id %}selected{% endif %}>
+                    {{ pt.name }} - {{ pt.description }}
+                </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="hours" class="form-label">Duration (Hours)</label>
+            <input type="number" id="hours" name="hours" class="form-control" value="{{ duration_hours }}" min="1" max="168" required>
+        </div>
+
+        {% if user_profile.role.name == 'dean' %}
+        <div class="checkbox-row">
+            <label>
+                <input type="checkbox" name="visible_to_security" {% if permission.visible_to_security %}checked{% endif %}>
+                Make visible to Security
+            </label>
+        </div>
+        {% endif %}
+
+        <div class="btn-container">
+            <button type="submit" class="btn btn-primary">Update Permission</button>
+            <a href="{% url 'staff_dashboard' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

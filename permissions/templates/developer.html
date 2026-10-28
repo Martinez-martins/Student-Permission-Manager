@@ -1,0 +1,203 @@
+{% extends 'permissions\base.html' %}
+{% load static %}
+
+{% block title %}KALI DEVELOPERS{% endblock %}
+
+{% block content %}
+<style>
+   
+    .team-section {
+        width: 100%;
+        padding: 80px 0;
+        text-align: center;
+        position: relative;
+        background: #000; 
+        overflow-x: hidden;
+    }
+
+    .team-section::before {
+        content: '';
+        position: absolute;
+        top: 0; left: 0; width: 100%; height: 100%;
+        background-image: url("{% static 'images/kali_logo.png' %}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed; /* Parallax effect */
+        filter: brightness(0.3);
+        z-index: 0;
+    }
+
+    .team-section .container { position: relative; z-index: 1; }
+
+    /* 2. Advanced Animation States */
+    .reveal-card {
+        opacity: 0;
+        transform: translateY(50px) scale(0.9);
+        transition: all 0.7s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        /* The delay is calculated based on the --order variable provided in the HTML */
+        transition-delay: calc(var(--order) * 100ms);
+        will-change: transform, opacity;
+    }
+
+    /* This class is toggled by the JavaScript below */
+    .reveal-card.is-visible {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+
+    /* 3. Developer Card Styling */
+    .developer-card {
+        background: rgba(173, 171, 171, 0.85); /* Semi-transparent */
+        backdrop-filter: blur(5px); /* Modern frosted glass look */
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        transition: transform 0.4s, background-color 0.4s, box-shadow 0.4s;
+        margin-bottom: 30px;
+        color: #1a1a1a;
+    }
+
+    .developer-card:hover {
+        transform: translateY(-15px) !important;
+        background-color: #ffffff;
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    .developer-card .card-img-top {
+        width: 140px; height: 140px; border-radius: 50%;
+        margin: 25px auto 15px; object-fit: cover;
+        border: 4px solid #fff;
+        transition: transform 0.4s;
+    }
+
+    .developer-card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+
+    .developer-card .card-title { font-weight: 800; letter-spacing: 1px; }
+    .developer-card .card-subtitle { color: #007bff; font-weight: 600; }
+    .developer-card .card-text { color: #444; padding: 0 15px; font-style: italic; }
+
+    .social-links { margin-top: 15px; padding: 15px 0; border-top: 1px solid rgba(0,0,0,0.05); }
+    .social-links a { color: #555; font-size: 1.3rem; margin: 0 10px; transition: 0.3s; }
+    .social-links a:hover { color: #007bff; transform: scale(1.2); }
+</style>
+
+<div class="team-section">
+    <div class="container">
+        <h1 class="text-white mb-4">Meet the KALI Team</h1>
+        <p class="lead text-light mb-5">Innovators. Creators. Problem Solvers.</p>
+
+        <div class="row justify-content-center">
+            <div class="col-md-4 col-sm-6 reveal-card" style="--order: 1;">
+                <div class="card developer-card">
+                    <img src="{% static 'images/me.jpg' %}" class="card-img-top" alt="Dev">
+                    <div class="card-body">
+                        <h5 class="card-title">HIRWA BLAISE MARTINEZ</h5>
+                        <h6 class="card-subtitle">President & Lead Developer</h6>
+                        <p class="card-text">Full-stack expert turning complex ideas into elegant code.</p>
+                        <div class="social-links"><a href="#"><i class="bi bi-github"></i></a><a href="#"><i class="bi bi-linkedin"></i></a></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6 reveal-card" style="--order: 2;">
+                <div class="card developer-card">
+                    <img src="{% static 'images/default_profile.jpg' %}" class="card-img-top" alt="Dev">
+                    <div class="card-body">
+                        <h5 class="card-title">NIYONKURU FLORENCE</h5>
+                        <h6 class="card-subtitle">VP & Frontend Specialist</h6>
+                        <p class="card-text">Crafting beautiful, responsive user experiences.</p>
+                        <div class="social-links"><a href="#"><i class="bi bi-github"></i></a><a href="#"><i class="bi bi-linkedin"></i></a></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6 reveal-card" style="--order: 3;">
+                <div class="card developer-card">
+                    <img src="{% static 'images/default_profile.jpg' %}" class="card-img-top" alt="Dev">
+                    <div class="card-body">
+                        <h5 class="card-title">NISINGIZWE LEONCE</h5>
+                        <h6 class="card-subtitle">UI/UX & Backend</h6>
+                        <p class="card-text">Where aesthetics meet functionality seamlessly.</p>
+                        <div class="social-links"><a href="#"><i class="bi bi-github"></i></a><a href="#"><i class="bi bi-linkedin"></i></a></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6 reveal-card" style="--order: 1;">
+                <div class="card developer-card">
+                    <img src="{% static 'images/default_profile.jpg' %}" class="card-img-top" alt="Dev">
+                    <div class="card-body">
+                        <h5 class="card-title">MUGISHA SYLVESTER</h5>
+                        <h6 class="card-subtitle">Database Architect</h6>
+                        <p class="card-text">Managing data structures with precision and speed.</p>
+                        <div class="social-links"><a href="#"><i class="bi bi-github"></i></a><a href="#"><i class="bi bi-linkedin"></i></a></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6 reveal-card" style="--order: 2;">
+                <div class="card developer-card">
+                    <img src="{% static 'images/default_profile.jpg' %}" class="card-img-top" alt="Dev">
+                    <div class="card-body">
+                        <h5 class="card-title">NISHIMWE Hope Myrium</h5>
+                        <h6 class="card-subtitle">Server & Network Manager</h6>
+                        <p class="card-text">The backbone of our secure and scalable infrastructure.</p>
+                        <div class="social-links"><a href="#"><i class="bi bi-github"></i></a><a href="#"><i class="bi bi-linkedin"></i></a></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6 reveal-card" style="--order: 3;">
+                <div class="card developer-card">
+                    <img src="{% static 'images/default_profile.jpg' %}" class="card-img-top" alt="Dev">
+                    <div class="card-body">
+                        <h5 class="card-title">NIYITANGA INEZA Roy</h5>
+                        <h6 class="card-subtitle">Infrastructure Security</h6>
+                        <p class="card-text">Hardening our systems against the digital unknown.</p>
+                        <div class="social-links"><a href="#"><i class="bi bi-github"></i></a><a href="#"><i class="bi bi-linkedin"></i></a></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6 reveal-card" style="--order: 1;">
+                <div class="card developer-card">
+                    <img src="{% static 'images/default_profile.jpg' %}" class="card-img-top" alt="Dev">
+                    <div class="card-body">
+                        <h5 class="card-title">HITIMANA Axcel</h5>
+                        <h6 class="card-subtitle">UI/UX Designer</h6>
+                        <p class="card-text">Designing the visual language of our products.</p>
+                        <div class="social-links"><a href="#"><i class="bi bi-github"></i></a><a href="#"><i class="bi bi-linkedin"></i></a></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    /**
+     * The Observer monitors elements as they enter the screen.
+     */
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                // Fade In
+                entry.target.classList.add('is-visible');
+            } else {
+                // Fade Out (Remove this line if you want cards to stay visible once revealed)
+                entry.target.classList.remove('is-visible');
+            }
+        });
+    }, { 
+        threshold: 0.1, // Trigger when 10% of the element is visible
+        rootMargin: '0px 0px -50px 0px' 
+    });
+
+    // Apply observer to every card with the reveal-card class
+    document.querySelectorAll('.reveal-card').forEach(card => observer.observe(card));
+</script>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+{% endblock content %}

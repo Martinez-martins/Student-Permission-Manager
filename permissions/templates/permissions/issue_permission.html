@@ -1,0 +1,167 @@
+{% extends 'permissions/base.html' %}
+
+{% block title %}Issue Permission - SPMS{% endblock %}
+
+{% block extra_head %}
+<style>
+    .permission-form-container {
+        max-width: 720px;
+        margin: 0 auto;
+        background: #fff;
+        border: 1px solid #d8e4ef;
+        border-radius: 14px;
+        box-shadow: 0 14px 28px rgba(16, 42, 67, 0.08);
+        padding: 24px;
+    }
+
+    .permission-form-container h2 {
+        margin-bottom: 8px;
+        color: #0f4c81;
+    }
+
+    .permission-info {
+        background: #eef7ff;
+        border: 1px solid #cfe1f2;
+        border-radius: 10px;
+        padding: 12px;
+        margin-bottom: 16px;
+        color: #2a4f70;
+        font-size: 0.93rem;
+    }
+
+    .form-group { margin-bottom: 14px; }
+    .form-group label {
+        display: block;
+        margin-bottom: 6px;
+        font-weight: 600;
+        color: #2a4a66;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #cbdbea;
+        border-radius: 10px;
+        font-size: 15px;
+        box-sizing: border-box;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #1f7ac0;
+        box-shadow: 0 0 0 4px rgba(31, 122, 192, 0.15);
+    }
+
+    .form-group textarea { min-height: 90px; resize: vertical; }
+
+    .toggle-group {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: #f8fbff;
+        border: 1px solid #dfeaf4;
+        border-radius: 10px;
+        padding: 10px 12px;
+        margin-bottom: 12px;
+    }
+
+    .toggle-group label {
+        font-weight: 700;
+        color: #244864;
+    }
+
+    .toggle-group input[type="checkbox"] {
+        transform: scale(1.2);
+    }
+
+    .issue-btn {
+        width: 100%;
+        padding: 12px;
+        background: linear-gradient(135deg, #145d9b 0%, #1f7ac0 100%);
+        color: #fff;
+        border: none;
+        border-radius: 10px;
+        font-size: 15px;
+        font-weight: 700;
+        cursor: pointer;
+        box-shadow: 0 12px 24px rgba(20, 93, 155, 0.24);
+    }
+
+    .back-link {
+        text-align: center;
+        margin-top: 16px;
+        padding-top: 14px;
+        border-top: 1px solid #e5edf5;
+    }
+
+    .back-link a {
+        color: #165d97;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .back-link a:hover { text-decoration: underline; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="permission-form-container">
+    <h2>Issue New Permission</h2>
+
+    <div class="permission-info">
+        <strong>Permission Guidelines:</strong>
+        You can only issue permissions for types authorized for your role. The permission will be valid for the duration you set.
+    </div>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="student_name">Student Name</label>
+            <input type="text" id="student_name" name="student_name" placeholder="Enter student's full name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="student_class">Student Class</label>
+            <input type="text" id="student_class" name="student_class" placeholder="e.g., 10A, 12B" required>
+        </div>
+
+        <div class="form-group">
+            <label for="description">Description</label>
+            <textarea id="description" name="description" placeholder="Describe the reason for permission" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="permission_type">Permission Type</label>
+            <select id="permission_type" name="permission_type" required>
+                <option value="">Select Permission Type</option>
+                {% for pt in allowed_permission_types %}
+                <option value="{{ pt.id }}">{{ pt.name }} - {{ pt.description }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="hours">Duration (hours)</label>
+            <input type="number" id="hours" name="hours" min="1" max="168" value="1" required>
+        </div>
+
+        {% if user_profile.role.name == 'dean' %}
+        <div class="toggle-group">
+            <label for="visible_to_security">Make Visible to Security</label>
+            <input id="visible_to_security" type="checkbox" name="visible_to_security">
+        </div>
+        {% endif %}
+
+        <button type="submit" class="issue-btn">Issue Permission</button>
+    </form>
+
+    <div class="back-link">
+        <a href="{% url 'staff_dashboard' %}">Back to Dashboard</a>
+    </div>
+</div>
+{% endblock %}

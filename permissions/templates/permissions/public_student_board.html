@@ -1,0 +1,131 @@
+{% extends 'permissions/base.html' %}
+
+{% block title %}Student Board - SPMS{% endblock %}
+
+{% block extra_head %}
+<style>
+    .page-header {
+        margin-bottom: 18px;
+        text-align: center;
+    }
+
+    .page-header h1 {
+        color: #0f4c81;
+        margin-bottom: 8px;
+    }
+
+    .page-header p {
+        color: #5f7183;
+        max-width: 760px;
+        margin: 0 auto;
+    }
+
+    .board-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+        gap: 18px;
+    }
+
+    .board-card {
+        background: #fff;
+        border: 1px solid #d8e4ef;
+        border-radius: 14px;
+        box-shadow: 0 14px 28px rgba(16, 42, 67, 0.08);
+        padding: 20px;
+    }
+
+    .board-card h2 {
+        color: #0f4c81;
+        margin-bottom: 14px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid #d8e4ef;
+        font-size: 1.2rem;
+    }
+
+    .entry-item,
+    .shared-list-item {
+        background: #f8fbff;
+        border: 1px solid #d8e4ef;
+        border-radius: 12px;
+        padding: 14px;
+        margin-bottom: 12px;
+    }
+
+    .entry-name,
+    .shared-title {
+        font-weight: 700;
+        color: #254864;
+        margin-bottom: 4px;
+    }
+
+    .entry-meta,
+    .shared-meta {
+        color: #5f7183;
+        font-size: 0.9rem;
+    }
+
+    .name-list {
+        margin-top: 10px;
+        padding-left: 18px;
+        color: #244864;
+    }
+
+    .name-list li {
+        margin-bottom: 6px;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 24px 14px;
+        color: #5f7183;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>Student Board</h1>
+    <p>Public board showing students in the sickbay and all student names shared by authorized staff.</p>
+</div>
+
+<div class="board-grid">
+    <div class="board-card">
+        <h2>Sickbay Students</h2>
+        {% if sickbay_entries %}
+            {% for entry in sickbay_entries %}
+            <div class="entry-item">
+                <div class="entry-name">{{ entry.student_name }}</div>
+                <div class="entry-meta">{{ entry.get_level_display }} - {{ entry.student_class }}</div>
+                <div class="entry-meta">Recorded by {{ entry.nurse.get_full_name|default:entry.nurse.username }}</div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">No students are currently listed in the sickbay.</div>
+        {% endif %}
+    </div>
+
+    <div class="board-card">
+        <h2>Shared Student Lists</h2>
+        {% if shared_lists %}
+            {% for shared_list in shared_lists %}
+            <div class="shared-list-item">
+                <div class="shared-title">{{ shared_list.title }}</div>
+                <div class="shared-meta">
+                    Shared by {{ shared_list.created_by.get_full_name|default:shared_list.created_by.username }}
+                </div>
+                {% if shared_list.description %}
+                <div class="shared-meta" style="margin-top: 6px;">{{ shared_list.description }}</div>
+                {% endif %}
+                <ul class="name-list">
+                    {% for name in shared_list.names %}
+                    <li>{{ name }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="empty-state">No public shared student lists are available right now.</div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

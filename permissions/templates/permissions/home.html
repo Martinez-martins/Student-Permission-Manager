@@ -1,0 +1,251 @@
+{% extends 'permissions/base.html' %}
+
+{% block title %}Student Permission Management System - SPMS{% endblock %}
+
+{% block extra_head %}
+<style>
+    :root {
+        --surface: #ffffff;
+        --canvas: #f3f8fc;
+        --text: #102a43;
+        --muted: #5f7183;
+        --line: #d9e6f1;
+        --brand-dark: #0f4c81;
+        --brand-mid: #1f7ac0;
+        --brand-soft: #eaf4fd;
+    }
+
+    body { background: var(--canvas); color: var(--text); }
+    .main-content { padding: 0; }
+
+    .hero-wrap { padding: 18px; }
+    .hero {
+        margin: 0 auto;
+        max-width: 1240px;
+        
+        padding: clamp(48px, 8vw, 92px) clamp(20px, 4vw, 46px);
+        background: linear-gradient(135deg, #0f4c81 0%, #2d84c8 56%, #91c7ec 100%);
+        color: #fff;
+        text-align: center;
+        box-shadow: 0 24px 52px rgba(16, 42, 67, 0.25);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .hero::before {
+        content: "";
+        position: absolute;
+        width: 360px;
+        height: 360px;
+        border-radius: 50%;
+        top: -110px;
+        right: -80px;
+        background: rgba(255, 255, 255, 0.14);
+    }
+
+    .hero h1 {
+        font-size: clamp(2rem, 6vw, 3.5rem);
+        line-height: 1.1;
+        margin-bottom: 14px;
+        letter-spacing: 0.3px;
+        position: relative;
+    }
+
+    .hero p {
+        font-size: clamp(1rem, 2.2vw, 1.22rem);
+        line-height: 1.7;
+        margin: 0 auto 28px;
+        max-width: 780px;
+        position: relative;
+        opacity: 0.98;
+    }
+
+    .cta-button {
+        display: inline-block;
+        padding: 12px 24px;
+        
+        background: linear-gradient(135deg, #0f3556 0%, #14568d 100%);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+        box-shadow: 0 12px 26px rgba(13, 53, 88, 0.35);
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+        position: relative;
+    }
+
+    .cta-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 18px 34px rgba(13, 53, 88, 0.4);
+    }
+
+    .hero-actions {
+        display: flex;
+        justify-content: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .cta-secondary {
+        display: inline-block;
+        padding: 12px 24px;
+        
+        background: rgba(255, 255, 255, 0.14);
+        border: 1px solid rgba(255, 255, 255, 0.32);
+        color: #fff;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+    .section {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: clamp(26px, 5vw, 60px) 18px;
+    }
+
+    .section h2 {
+        text-align: center;
+        font-size: clamp(1.45rem, 3vw, 2.2rem);
+        margin-bottom: 10px;
+    }
+
+    .section-intro {
+        text-align: center;
+        color: var(--muted);
+        max-width: 760px;
+        margin: 0 auto 28px;
+        line-height: 1.65;
+    }
+
+    .features-grid,
+    .roles-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+        gap: 18px;
+    }
+
+    .feature-card,
+    .role-item {
+        background: var(--surface);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 20px;
+        box-shadow: 0 12px 26px rgba(16, 42, 67, 0.08);
+        transition: transform 0.24s ease, box-shadow 0.24s ease;
+    }
+
+    .feature-card:hover,
+    .role-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 18px 30px rgba(16, 42, 67, 0.13);
+    }
+
+    .feature-card h3,
+    .role-item h4 {
+        color: var(--brand-dark);
+        margin: 0 0 8px;
+        font-size: 1.08rem;
+    }
+
+    .feature-card p,
+    .role-item p {
+        color: var(--muted);
+        margin: 0;
+        line-height: 1.62;
+    }
+
+    .roles {
+        background: var(--brand-soft);
+        border-radius: 20px;
+        margin-bottom: 28px;
+    }
+
+    @media (max-width: 768px) {
+        .hero-wrap { padding: 10px; }
+        .hero { border-radius: 18px; }
+        .section { padding-left: 12px; padding-right: 12px; }
+    }
+
+    @media (max-width: 480px) {
+        .features-grid, .roles-grid { grid-template-columns: 1fr; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero-wrap">
+    <div class="hero">
+        <h1>Student Permission Management System</h1>
+        <p>Move from paper slips to a secure digital workflow that tracks every permission request with speed, visibility, and accountability.</p>
+        <div class="hero-actions">
+            <a href="{% url 'login' %}" class="cta-button">Get Started</a>
+            <a href="{% url 'public_student_board' %}" class="cta-secondary">Open Student Board</a>
+        </div>
+    </div>
+</div>
+
+<div class="section">
+    <h2>Key Features</h2>
+    <p class="section-intro">Designed for schools that need clarity, control, and faster response across all permission workflows.</p>
+    <div class="features-grid">
+        <div class="feature-card">
+            <h3>Digital Permissions</h3>
+            <p>Replace paper slips with secure digital permission requests that are issued, tracked, and verified instantly.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Role-Based Access</h3>
+            <p>Enforce strict access control so only authorized staff can issue and manage specific permission types.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Real-Time Monitoring</h3>
+            <p>Administrators can monitor all permission activities in real time with clear dashboards and reports.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Time-Bound Permissions</h3>
+            <p>Set specific validity periods with automatic expiry handling and up-to-date status tracking.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Enhanced Security</h3>
+            <p>Secure authentication and traceable audit history protect the integrity of every permission flow.</p>
+        </div>
+        <div class="feature-card">
+            <h3>Efficient Workflow</h3>
+            <p>Reduce administrative overhead and improve response times with a streamlined digital process.</p>
+        </div>
+    </div>
+</div>
+
+<div class="section roles">
+    <h2>User Roles</h2>
+    <p class="section-intro">Each role has focused access and clear responsibility for safe school operations.</p>
+    <div class="roles-grid">
+        <div class="role-item">
+            <h4>Security Personnel</h4>
+            <p>Verify permissions at checkpoints.</p>
+        </div>
+        <div class="role-item">
+            <h4>Patron and Matron</h4>
+            <p>Manage dormitory permissions.</p>
+        </div>
+        <div class="role-item">
+            <h4>Nurses</h4>
+            <p>Handle medical-related permissions.</p>
+        </div>
+        <div class="role-item">
+            <h4>Dean</h4>
+            <p>Oversee academic permissions.</p>
+        </div>
+        <div class="role-item">
+            <h4>Director of Studies</h4>
+            <p>Manage study-related permissions.</p>
+        </div>
+        <div class="role-item">
+            <h4>Principal</h4>
+            <p>Provide final approval authority.</p>
+        </div>
+        <div class="role-item">
+            <h4>Administrator</h4>
+            <p>Configure and monitor the system.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

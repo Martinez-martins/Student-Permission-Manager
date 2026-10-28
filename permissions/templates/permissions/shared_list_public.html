@@ -1,0 +1,74 @@
+{% extends 'permissions/base.html' %}
+
+{% block title %}Shared Student List - SPMS{% endblock %}
+
+{% block extra_head %}
+<style>
+    .shared-list-card {
+        max-width: 760px;
+        margin: 0 auto;
+        background: #fff;
+        border: 1px solid #d8e4ef;
+        border-radius: 16px;
+        box-shadow: 0 14px 28px rgba(16, 42, 67, 0.08);
+        padding: 24px;
+    }
+
+    .shared-list-card h2 {
+        color: #0f4c81;
+        margin-bottom: 8px;
+    }
+
+    .shared-meta {
+        color: #5f7183;
+        margin-bottom: 16px;
+    }
+
+    .name-list {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        display: grid;
+        gap: 10px;
+    }
+
+    .name-list li {
+        background: #f8fbff;
+        border: 1px solid #dfeaf4;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-weight: 600;
+        color: #244864;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="shared-list-card">
+    <h2>{{ shared_list.title }}</h2>
+    <p class="shared-meta">
+        Shared by {{ shared_list.created_by.get_full_name|default:shared_list.created_by.username }}
+        for {{ shared_list.shared_with_role.get_name_display }} access.
+    </p>
+
+    {% if shared_list.description %}
+        <p>{{ shared_list.description }}</p>
+    {% endif %}
+
+    {% if shared_list.share_type == 'nurse_room' and nurse_room_entries %}
+        <ul class="name-list">
+            {% for entry in nurse_room_entries %}
+                <li>{{ entry.student_name }} - {{ entry.get_level_display }} - {{ entry.student_class }}</li>
+            {% endfor %}
+        </ul>
+    {% elif names %}
+        <ul class="name-list">
+            {% for name in names %}
+                <li>{{ name }}</li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>No individuals are currently listed.</p>
+    {% endif %}
+</div>
+{% endblock %}

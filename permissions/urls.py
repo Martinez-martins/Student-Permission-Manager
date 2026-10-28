@@ -1,0 +1,30 @@
+from django.urls import path
+from . import views
+
+urlpatterns = [
+    path('', views.welcome, name='welcome'),
+    path('home/', views.home, name='home'),
+    path('student-board/', views.public_student_board, name='public_student_board'),
+    path('kali/', views.index, name='kali'),
+    path('developer/',views.developer,name='developer'),
+    path('admin-dashboard/', views.admin_dashboard, name='admin_dashboard'),
+    path('create-role/', views.create_staff_role, name='create_staff_role'),
+    path('generate-code/', views.generate_activation_code, name='generate_activation_code'),
+    path('create-permission-type/', views.create_permission_type, name='create_permission_type'),
+    path('staff-dashboard/', views.staff_dashboard, name='staff_dashboard'),
+    path('nurse-room/', views.nurse_room_list, name='nurse_room_list'),
+    path('dean-notifications/', views.dean_notifications, name='dean_notifications'),
+    path('issue-permission/', views.issue_permission, name='issue_permission'),
+    path('edit-permission/<int:permission_id>/', views.edit_permission, name='edit_permission'),
+    path('delete-permission/<int:permission_id>/', views.delete_permission, name='delete_permission'),
+    path('shared-lists/create/', views.create_shared_list, name='create_shared_list'),
+    path('shared-lists/<int:pk>/download/', views.download_shared_list, name='download_shared_list'),
+    path('shared-lists/nurse-room/', views.manage_nurse_room_share, name='manage_nurse_room_share'),
+    path('shared-lists/nurse-room/remove/<int:entry_id>/', views.remove_nurse_room_entry, name='remove_nurse_room_entry'),
+    path('notify-dean/', views.notify_dean_about_student, name='notify_dean_about_student'),
+    path('notifications/<int:notification_id>/read/', views.mark_notification_read, name='mark_notification_read'),
+    path('shared/<uuid:share_token>/', views.shared_list_public_view, name='shared_list_public'),
+    path('security-dashboard/', views.security_dashboard, name='security_dashboard'),
+    path('register/', views.register_staff, name='register_staff'),
+    path('permissions/',views.all_permissions, name='permissions'),
+]
